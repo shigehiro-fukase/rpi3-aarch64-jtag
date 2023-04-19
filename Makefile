@@ -5,7 +5,7 @@ LD = ${CROSS}ld
 ELF2BIN = ${CROSS}objcopy --gap-fill=0xff -j .text -j .rodata -j .data -O binary
 
 NAME	= rpi3-jtag.elf
-KERNEL	= kernel.img
+KERNEL	= kernel8.img
 CFLAGS	= -ggdb3 -std=gnu99 -Wall
 LDFLAGS = -Bstatic --gc-sections -nostartfiles -nostdlib
 
