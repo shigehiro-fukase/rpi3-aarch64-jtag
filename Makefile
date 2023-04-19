@@ -1,22 +1,27 @@
+CROSS	= aarch64-linux-gnu-
+AS = ${CROSS}as
+CC = ${CROSS}gcc
+LD = ${CROSS}ld
+ELF2BIN = ${CROSS}objcopy --gap-fill=0xff -j .text -j .rodata -j .data -O binary
+
 NAME	= rpi3-jtag.elf
 KERNEL	= kernel.img
-CROSS	= aarch64-linux-gnu-
 CFLAGS	= -ggdb3 -std=gnu99 -Wall
 LDFLAGS = -Bstatic --gc-sections -nostartfiles -nostdlib
 
 all: $(KERNEL)
 
 %.o: %.asm
-	${CROSS}as -o $@ $<
+	$(AS) -o $@ $<
 
 %.o: %.c
-	${CROSS}gcc ${CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS} ${DEFS0} -c -o $@ $<
 
 $(NAME): main.o startup.o
-	${CROSS}ld $(LDFLAGS) -o $@ -T linkerscript.ld $<
+	$(LD) $(LDFLAGS) -o $@ -T linkerscript.ld $<
 
 $(KERNEL): $(NAME)
-	${CROSS}objcopy --gap-fill=0xff -j .text -j .rodata -j .data -O binary $< $@
+	$(ELF2BIN) $< $@
 
 clean:
 	rm -f $(KERNEL) $(NAME) main.o startup.o
