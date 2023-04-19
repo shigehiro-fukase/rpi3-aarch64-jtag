@@ -9,6 +9,8 @@ KERNEL	= kernel8.img
 CFLAGS	= -ggdb3 -std=gnu99 -Wall
 LDFLAGS = -Bstatic --gc-sections -nostartfiles -nostdlib
 
+CFLAGS	+= -DJTAG_RTCK_ALT4=0
+
 all: $(KERNEL)
 
 %.o: %.asm

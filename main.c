@@ -13,6 +13,7 @@
  */
 
 #include <stdint.h>
+#include "config.h"
 
 #define BIT(x)	(1U << (x))
 
@@ -136,8 +137,10 @@ static void enable_jtag()
 	gpfsel2 &= ~(GPFSEL_PIN_MASK	<<  6);	// Gpio22
 	gpfsel2 |=  (GPFSEL_ALT_4		<<  6);	// Alt4: ARM_TRST
 	gpfsel2 &= ~(GPFSEL_PIN_MASK	<<  9);	// Gpio23
+#if defined(JTAG_RTCK_ALT4) && (JTAG_RTCK_ALT4 != 0)
 	gpfsel2 |=  (GPFSEL_ALT_4		<<  9);	// Alt4: ARM_RTCK
 	gpfsel2 &= ~(GPFSEL_PIN_MASK	<< 12);	// Gpio24
+#endif // JTAG_RTCK_ALT4
 	gpfsel2 |=  (GPFSEL_ALT_4		<< 12);	// Alt4: ARM_TDO
 	gpfsel2 &= ~(GPFSEL_PIN_MASK	<< 15);	// Gpio25
 	gpfsel2 |=  (GPFSEL_ALT_4		<< 15);	// Alt4: ARM_TCK
