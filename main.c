@@ -181,14 +181,59 @@ static void uart_init(void)
 }
 
 
+#if defined(WAIT_JTAG) && (WAIT_JTAG != 0)
+int wait = 1;
+#endif // WAIT_JTAG
+#if defined(STAGE2) && (STAGE2 != 0)
+int stage2 = 2;
+#endif // STAGE2
+
 int main()
 {
+	int i;
 	uart_init();
 	dbg_puts("\r\nWaiting for JTAG\r\n");
 	enable_jtag();
-	while (1)
-	{
+	#if defined(WAIT_JTAG) && (WAIT_JTAG != 0)
+	while (wait) {
+		#if defined(PRINT_DOT) && (PRINT_DOT != 0)
 		bcm283x_mu_serial_putc('.');
-		for(int i = 0; i < 1000000; i++) nop();
+		#endif // PRINT_DOT
+		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+		for(int i = 0; i < 1000000; i++) if (!wait) break;
+		#endif // WAIT_PRINT
+		#if defined(STAGE1) && (STAGE1 != 0)
+		dbg_puts("\r\nSTAGE 1\r\n");
+		for (i=0; i<10; i++) {
+			bcm283x_mu_serial_putc('0'+i);
+			#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+			for(int i = 0; i < 1000000; i++) if (!wait) break;
+			#endif // WAIT_PRINT
+		}
+		dbg_puts("\r\n");
+		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+		for(int i = 0; i < 1000000; i++) if (!wait) break;
+		#endif // WAIT_PRINT
+		#endif // STAGE1
 	}
+	#endif // WAIT_JTAG
+
+	#if defined(STAGE2) && (STAGE2 != 0)
+	dbg_puts("\r\nSTAGE 2\r\n");
+	while (stage2) {
+		bcm283x_mu_serial_putc('1');
+		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+		for(int i = 0; i < 1000000; i++) if (!stage2) break;
+		#endif // WAIT_PRINT
+		bcm283x_mu_serial_putc('2');
+		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+		for(int i = 0; i < 1000000; i++) if (!stage2) break;
+		#endif // WAIT_PRINT
+		bcm283x_mu_serial_putc('3');
+		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
+		for(int i = 0; i < 1000000; i++) if (!stage2) break;
+		#endif // WAIT_PRINT
+		dbg_puts("\r\n");
+	}
+	#endif // STAGE2
 }
