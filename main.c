@@ -219,8 +219,8 @@ int main()
 	#endif // WAIT_JTAG
 
 	#if defined(STAGE2) && (STAGE2 != 0)
-	dbg_puts("\r\nSTAGE 2\r\n");
 	while (stage2) {
+		dbg_puts("\r\nSTAGE 2\r\n");
 		bcm283x_mu_serial_putc('1');
 		#if defined(WAIT_PRINT) && (WAIT_PRINT != 0)
 		for(int i = 0; i < 1000000; i++) if (!stage2) break;
