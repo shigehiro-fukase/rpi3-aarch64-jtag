@@ -40,3 +40,4 @@ test2.img: startup.o
 
 clean:
 	rm -f $(KERNEL) $(NAME) main.o startup.o
+	rm -f *.o *.elf *.img
