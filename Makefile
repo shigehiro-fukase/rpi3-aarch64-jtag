@@ -11,17 +11,18 @@ LDFLAGS = -Bstatic --gc-sections -nostartfiles -nostdlib
 
 CFLAGS	+= -DJTAG_RTCK_ALT4=0
 
-DEFS0 = -DWAIT_JTAG=1
+DEFS = -DWAIT_JTAG=1
+DEFS0 = -DWAIT_JTAG=1 -DPRINT_DOT=1 -DWAIT_PRINT=1
 DEFS1 = -DWAIT_JTAG=1 -DSTAGE1=1 -DWAIT_PRINT=1
 DEFS2 = -DWAIT_JTAG=0 -DSTAGE2=1 -DWAIT_PRINT=1
 
-all: $(KERNEL) test1.img test2.img
+all: $(KERNEL) test0.img test1.img test2.img
 
 %.o: %.asm
 	$(AS) -o $@ $<
 
 %.o: %.c
-	$(CC) ${CFLAGS} ${DEFS0} -c -o $@ $<
+	$(CC) ${CFLAGS} ${DEFS} -c -o $@ $<
 
 $(NAME): main.o startup.o
 	$(LD) $(LDFLAGS) -o $@ -T linkerscript.ld $<
@@ -29,6 +30,10 @@ $(NAME): main.o startup.o
 $(KERNEL): $(NAME)
 	$(ELF2BIN) $< $@
 
+test0.img: startup.o
+	$(CC) ${CFLAGS} ${DEFS0} -c -o $(@:.img=.o) main.c
+	$(LD) $(LDFLAGS) -o $(@:.img=.elf) -T linkerscript.ld $(@:.img=.o) $<
+	$(ELF2BIN) $(@:.img=.elf) $@
 test1.img: startup.o
 	$(CC) ${CFLAGS} ${DEFS1} -c -o $(@:.img=.o) main.c
 	$(LD) $(LDFLAGS) -o $(@:.img=.elf) -T linkerscript.ld $(@:.img=.o) $<
